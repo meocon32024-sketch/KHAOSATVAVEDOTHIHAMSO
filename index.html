@@ -1,0 +1,1577 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khảo Sát & Vẽ Đồ Thị Hàm Số mônToán THPT</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- KaTeX CSS & JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <!-- Marked.js cho Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+        :root {
+            --primary-blue: #0b5ed7;
+            --kntt-orange: #d97706;
+            --bg-light: #f8fafc;
+        }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-light);
+            color: #1e293b;
+        }
+        .app-header {
+            background: linear-gradient(135deg, #1e3a8a, #0284c7);
+            color: white;
+            padding: 22px 0;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        .nav-tabs .nav-link {
+            color: #475569;
+            font-weight: 600;
+            border: none;
+            padding: 12px 20px;
+        }
+        .nav-tabs .nav-link.active {
+            color: var(--primary-blue);
+            border-bottom: 3px solid var(--primary-blue);
+            background: transparent;
+        }
+        .card {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .input-group-text {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+            background-color: #f1f5f9;
+            font-weight: bold;
+        }
+        .canvas-card {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        canvas {
+            display: inline-block;
+            max-width: 100%;
+            height: auto;
+        }
+        /* Tối ưu hiển thị Markdown với giới hạn lim có chỉ số bên dưới */
+        .markdown-rendered {
+            font-size: 1.02rem;
+            line-height: 1.95;
+            color: #0f172a;
+        }
+        .markdown-rendered h1, .markdown-rendered h2, .markdown-rendered h3 {
+            color: #1e3a8a;
+            margin-top: 1.2rem;
+            margin-bottom: 0.6rem;
+            font-weight: bold;
+        }
+        .markdown-rendered h3 {
+            font-size: 1.15rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 4px;
+        }
+        .markdown-rendered ul {
+            padding-left: 24px;
+        }
+        .markdown-raw {
+            width: 100%;
+            min-height: 380px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.9rem;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 12px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+
+<header class="app-header text-center">
+    <div class="container">
+        <h2 class="fw-bold mb-1"><i class="fa-solid fa-square-root-variable me-2"></i>ỨNG DỤNG KHẢO SÁT & VẼ ĐỒ THỊ HÀM SỐ</h2>
+        <p class="mb-0 text-light opacity-75">Chuẩn hóa hình học & giải tích GDPT 2018/ GV MAI ĐỨC THẮNG - THPT NTB</p>
+    </div>
+</header>
+
+<div class="container pb-5">
+    <!-- KHUNG CHỌN HÀM SỐ VÀ NHẬP LIỆU -->
+    <div class="card mb-4">
+        <div class="card-header bg-white pt-3">
+            <ul class="nav nav-tabs card-header-tabs" id="typeTabs">
+                <li class="nav-item"><a class="nav-link active" href="#" data-type="bac3">Hàm bậc 3</a></li>
+                <li class="nav-item"><a class="nav-link" href="#" data-type="bac1_1">Phân thức bậc 1 / 1</a></li>
+                <li class="nav-item"><a class="nav-link" href="#" data-type="bac2_1">Phân thức bậc 2 / 1</a></li>
+                <li class="nav-item"><a class="nav-link" href="#" data-type="trungphuong">Trùng phương</a></li>
+                <li class="nav-item"><a class="nav-link" href="#" data-type="bac2">Hàm bậc 2</a></li>
+            </ul>
+        </div>
+        <div class="card-body p-4">
+            <div id="mathFormulaPreview" class="text-center mb-3 fs-5 text-primary"></div>
+            
+            <form id="inputForm" onsubmit="event.preventDefault(); runAnalysis();">
+                <div class="row g-3 justify-content-center" id="inputsContainer"></div>
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary px-4 py-2 fw-semibold shadow-sm">
+                        <i class="fa-solid fa-calculator me-2"></i>Khảo Sát Chi Tiết
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- KHU VỰC KẾT QUẢ -->
+    <div class="row d-none" id="resultContainer">
+        <!-- CỘT TRÁI: LỜI GIẢI MARKDOWN CHI TIẾT -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                    <span class="fw-bold text-primary"><i class="fa-solid fa-file-pen me-2"></i>Lời Giải Chi Tiết (Chuẩn SGK KNTT)</span>
+                    <div>
+                        <button class="btn btn-sm btn-outline-secondary me-1" id="btnToggleMode" onclick="toggleMarkdownView()">
+                            <i class="fa-solid fa-code me-1"></i>Xem mã MD
+                        </button>
+                        <button class="btn btn-sm btn-primary" onclick="copyMarkdownText()">
+                            <i class="fa-regular fa-copy me-1"></i>Sao chép MD
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="mdRenderedView" class="markdown-rendered"></div>
+                    <textarea id="mdRawView" class="markdown-raw d-none" readonly></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- CỘT PHẢI: BẢNG BIẾN THIÊN VECTOR & ĐỒ THỊ HÀM SỐ -->
+        <div class="col-lg-6 mb-4">
+            <!-- BẢNG BIẾN THIÊN -->
+            <div class="card mb-4">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center py-2">
+                    <span class="fw-bold text-success"><i class="fa-solid fa-table-cells me-2"></i>Bảng Biến Thiên Chuẩn SGK</span>
+                    <button class="btn btn-sm btn-outline-success" onclick="downloadCanvas('bbtCanvas', 'BangBienThien_Toan12.png')">
+                        <i class="fa-solid fa-download me-1"></i>Tải ảnh BBT (PNG)
+                    </button>
+                </div>
+                <div class="card-body canvas-card">
+                    <canvas id="bbtCanvas"></canvas>
+                </div>
+            </div>
+
+            <!-- ĐỒ THỊ HÀM SỐ -->
+            <div class="card">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center py-2">
+                    <span class="fw-bold text-warning-emphasis"><i class="fa-solid fa-chart-line me-2"></i>Đồ Thị Hàm Số Oxy</span>
+                    <button class="btn btn-sm btn-outline-warning" onclick="downloadCanvas('graphCanvas', 'DoThiHamSo_Toan12.png')">
+                        <i class="fa-solid fa-download me-1"></i>Tải ảnh Đồ Thị (PNG)
+                    </button>
+                </div>
+                <div class="card-body canvas-card">
+                    <canvas id="graphCanvas"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST THÔNG BÁO SAO CHÉP -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+    <div id="copyToast" class="toast align-items-center text-white bg-dark border-0" role="alert">
+        <div class="d-flex">
+            <div class="toast-body"><i class="fa-solid fa-circle-check text-success me-2"></i>Đã sao chép nội dung Markdown vào bộ nhớ tạm!</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // =========================================================================
+    // 1. LỚP SỐ HỌC PHÂN SỐ VÀ CĂN THỨC CHUẨN XÁC (EXACT ARITHMETIC)
+    // =========================================================================
+    class Frac {
+        constructor(n, d = 1) {
+            if (d === 0) throw new Error("Mẫu số bằng 0");
+            if (d < 0) { n = -n; d = -d; }
+            if (n === 0) {
+                this.n = 0;
+                this.d = 1;
+                return;
+            }
+            let g = Frac.gcd(Math.abs(n), Math.abs(d));
+            this.n = Math.round(n / g);
+            this.d = Math.round(d / g);
+        }
+        static gcd(a, b) {
+            a = Math.abs(a); b = Math.abs(b);
+            while (b) { let t = b; b = a % b; a = t; }
+            return a || 1;
+        }
+        static fromInput(val) {
+            if (val instanceof Frac) return val;
+            val = String(val || '').trim();
+            if (val.includes('/')) {
+                let parts = val.split('/');
+                return new Frac(parseFloat(parts[0]), parseFloat(parts[1]));
+            }
+            let f = parseFloat(val);
+            if (isNaN(f)) return new Frac(0, 1);
+            if (Number.isInteger(f)) return new Frac(f, 1);
+
+            let sign = f < 0 ? -1 : 1;
+            let x = Math.abs(f);
+            let p0 = 0, q0 = 1, p1 = 1, q1 = 0;
+            while (true) {
+                let a = Math.floor(x);
+                let p = a * p1 + p0;
+                let q = a * q1 + q0;
+                if (q > 10000 || Math.abs(Math.abs(f) - p / q) < 1e-7) {
+                    return new Frac(sign * p1, q1);
+                }
+                p0 = p1; q0 = q1;
+                p1 = p; q1 = q;
+                if (Math.abs(x - a) < 1e-11) break;
+                x = 1.0 / (x - a);
+            }
+            return new Frac(sign * p1, q1);
+        }
+        add(o) { return new Frac(this.n * o.d + o.n * this.d, this.d * o.d); }
+        sub(o) { return new Frac(this.n * o.d - o.n * this.d, this.d * o.d); }
+        mul(o) { return new Frac(this.n * o.n, this.d * o.d); }
+        div(o) { return new Frac(this.n * o.d, this.d * o.n); }
+        neg() { return new Frac(-this.n, this.d); }
+        val() { return this.n / this.d; }
+        toLatex() {
+            if (this.n === 0) return "0";
+            if (this.d === 1) return `${this.n}`;
+            let s = this.n < 0 ? "-" : "";
+            return `${s}\\frac{${Math.abs(this.n)}}{${this.d}}`;
+        }
+        toPlain() {
+            if (this.n === 0) return "0";
+            if (this.d === 1) return `${this.n}`;
+            return `${this.n}/${this.d}`;
+        }
+        toExactObj() {
+            if (this.n === 0) return { isFrac: false, text: "0", approx: 0 };
+            if (this.d === 1) return { isFrac: false, text: `${this.n}`, approx: this.n };
+            return {
+                isFrac: true,
+                sign: this.n < 0 ? "-" : "",
+                num: `${Math.abs(this.n)}`,
+                den: `${this.d}`,
+                text: `${this.n}/${this.d}`,
+                approx: this.val()
+            };
+        }
+    }
+
+    class ExactVal {
+        constructor(p = 0, q = 0, m = 1, r = 1) {
+            if (r < 0) { p = -p; q = -q; r = -r; }
+            if (m === 0 || q === 0) { m = 1; q = 0; }
+            else if (m > 1) {
+                let k = 1;
+                for (let d = 2; d * d <= m; d++) {
+                    while (m % (d * d) === 0) {
+                        k *= d;
+                        m = Math.floor(m / (d * d));
+                    }
+                }
+                q *= k;
+            }
+            if (m === 1) { p += q; q = 0; }
+            if (p === 0 && q === 0) {
+                this.p = 0;
+                this.q = 0;
+                this.m = 1;
+                this.r = 1;
+                return;
+            }
+            let g = Frac.gcd(Frac.gcd(Math.abs(p), Math.abs(q)), r);
+            this.p = Math.round(p / g);
+            this.q = Math.round(q / g);
+            this.m = m;
+            this.r = Math.round(r / g);
+        }
+        val() { return (this.p + this.q * Math.sqrt(this.m)) / this.r; }
+        toLatex() {
+            if (this.p === 0 && this.q === 0) return "0";
+            if (this.q === 0) {
+                if (this.r === 1) return `${this.p}`;
+                let s = this.p < 0 ? "-" : "";
+                return `${s}\\frac{${Math.abs(this.p)}}{${this.r}}`;
+            }
+            let qStr = Math.abs(this.q) === 1 ? `\\sqrt{${this.m}}` : `${Math.abs(this.q)}\\sqrt{${this.m}}`;
+            let numStr = "";
+            if (this.p === 0) numStr = this.q < 0 ? `-${qStr}` : qStr;
+            else {
+                let op = this.q > 0 ? " + " : " - ";
+                numStr = `${this.p}${op}${qStr}`;
+            }
+            if (this.r === 1) return numStr;
+            return `\\frac{${numStr}}{${this.r}}`;
+        }
+        toExactObj() {
+            if (this.p === 0 && this.q === 0) return { isFrac: false, text: "0", approx: 0 };
+            if (this.q === 0) {
+                if (this.r === 1) return { isFrac: false, text: `${this.p}`, approx: this.p };
+                return {
+                    isFrac: true,
+                    sign: this.p < 0 ? "-" : "",
+                    num: `${Math.abs(this.p)}`,
+                    den: `${this.r}`,
+                    text: `${this.p}/${this.r}`,
+                    approx: this.val()
+                };
+            }
+            let qStr = Math.abs(this.q) === 1 ? `√${this.m}` : `${Math.abs(this.q)}√${this.m}`;
+            let numStr = this.p === 0 ? (this.q < 0 ? `-${qStr}` : qStr) : `${this.p} ${this.q > 0 ? '+' : '-'} ${qStr}`;
+            if (this.r === 1) return { isFrac: false, text: numStr, approx: this.val() };
+            return {
+                isFrac: true,
+                sign: "",
+                num: numStr,
+                den: `${this.r}`,
+                text: `(${numStr})/${this.r}`,
+                approx: this.val()
+            };
+        }
+    }
+
+    function solveQuadraticExact(A, B, C) {
+        let delta = B.mul(B).sub(new Frac(4, 1).mul(A).mul(C));
+        if (delta.n < 0) return [];
+        if (delta.n === 0) {
+            let r = B.neg().div(new Frac(2, 1).mul(A));
+            return [new ExactVal(r.n, 0, 1, r.d)];
+        }
+        let prod = delta.n * delta.d;
+        let k = 1, m = prod;
+        for (let d = 2; d * d <= m; d++) {
+            while (m % (d * d) === 0) {
+                k *= d;
+                m = Math.floor(m / (d * d));
+            }
+        }
+        let twoA = new Frac(2, 1).mul(A);
+        let t1 = B.neg().div(twoA);
+        let t2 = new Frac(k, delta.d).div(twoA);
+
+        let commonDen = (t1.d * t2.d) / Frac.gcd(t1.d, t2.d);
+        let p = t1.n * (commonDen / t1.d);
+        let q = t2.n * (commonDen / t2.d);
+
+        let r1 = new ExactVal(p, -Math.abs(q), m, commonDen);
+        let r2 = new ExactVal(p, Math.abs(q), m, commonDen);
+        return [r1, r2];
+    }
+
+    function formatMonomialFrac(coef, variable, isFirst = false) {
+        if (coef.n === 0) return "";
+        let sign = coef.n > 0 ? (isFirst ? "" : " + ") : (isFirst ? "-" : " - ");
+        let absF = new Frac(Math.abs(coef.n), coef.d);
+        let coefStr = "";
+        if (variable === "") {
+            coefStr = absF.toLatex();
+        } else {
+            if (absF.n === 1 && absF.d === 1) coefStr = "";
+            else coefStr = absF.toLatex();
+        }
+        return sign + coefStr + variable;
+    }
+
+    function formatLinear(m, n) {
+        let s = "";
+        if (m.n !== 0) {
+            if (m.n === 1 && m.d === 1) s = "x";
+            else if (m.n === -1 && m.d === 1) s = "-x";
+            else s = `${m.toLatex()}x`;
+        }
+        if (n.n !== 0) {
+            let nStr = n.toLatex();
+            if (s === "") s = nStr;
+            else if (n.n > 0) s += ` + ${nStr}`;
+            else s += ` - ${new Frac(-n.n, n.d).toLatex()}`;
+        }
+        return s || "0";
+    }
+
+    function formatPlainLinear(m, n) {
+        let s = "";
+        if (m.n !== 0) {
+            if (m.n === 1 && m.d === 1) s = "x";
+            else if (m.n === -1 && m.d === 1) s = "-x";
+            else if (m.d === 1) s = `${m.n}x`;
+            else s = `${m.n}/${m.d}x`;
+        }
+        if (n.n !== 0) {
+            let nStr = n.toPlain();
+            if (s === "") s = nStr;
+            else if (n.n > 0) s += ` + ${nStr}`;
+            else s += ` - ${new Frac(-n.n, n.d).toPlain()}`;
+        }
+        return s || "0";
+    }
+
+    // =========================================================================
+    // 2. CẤU HÌNH BIỂU MẪU VÀ DỮ LIỆU ĐẦU VÀO
+    // =========================================================================
+    const FORMS_CONFIG = {
+        bac3: {
+            preview: '$$y = ax^3 + bx^2 + cx + d \\quad (a \\neq 0)$$',
+            fields: [
+                { id: 'a', label: 'a', def: '1' },
+                { id: 'b', label: 'b', def: '3' },
+                { id: 'c', label: 'c', def: '2' },
+                { id: 'd', label: 'd', def: '0' }
+            ]
+        },
+        bac1_1: {
+            preview: '$$y = \\frac{ax + b}{cx + d} \\quad (c \\neq 0, ad - bc \\neq 0)$$',
+            fields: [
+                { id: 'a', label: 'a', def: '2' },
+                { id: 'b', label: 'b', def: '1' },
+                { id: 'c', label: 'c', def: '1' },
+                { id: 'd', label: 'd', def: '4' }
+            ]
+        },
+        bac2_1: {
+            preview: '$$y = \\frac{ax^2 + bx + c}{px + q} \\quad (p \\neq 0, a \\neq 0)$$',
+            fields: [
+                { id: 'a', label: 'a', def: '1' },
+                { id: 'b', label: 'b', def: '0' },
+                { id: 'c', label: 'c', def: '0' },
+                { id: 'p', label: 'p', def: '2' },
+                { id: 'q', label: 'q', def: '-1' }
+            ]
+        },
+        trungphuong: {
+            preview: '$$y = ax^4 + bx^2 + c \\quad (a \\neq 0)$$',
+            fields: [
+                { id: 'a', label: 'a', def: '1' },
+                { id: 'b', label: 'b', def: '-2' },
+                { id: 'c', label: 'c', def: '-1' }
+            ]
+        },
+        bac2: {
+            preview: '$$y = ax^2 + bx + c \\quad (a \\neq 0)$$',
+            fields: [
+                { id: 'a', label: 'a', def: '1' },
+                { id: 'b', label: 'b', def: '-4' },
+                { id: 'c', label: 'c', def: '3' }
+            ]
+        }
+    };
+
+    let currentType = 'bac1_1';
+    let currentRawMarkdown = '';
+
+    function setupTabs() {
+        document.querySelectorAll('#typeTabs .nav-link').forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.querySelectorAll('#typeTabs .nav-link').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentType = tab.dataset.type;
+                renderInputs();
+            });
+        });
+    }
+
+    function renderInputs() {
+        const conf = FORMS_CONFIG[currentType];
+        document.getElementById('mathFormulaPreview').innerHTML = conf.preview;
+        let html = '';
+        conf.fields.forEach(f => {
+            html += `
+            <div class="col-md-3 col-sm-6">
+                <div class="input-group">
+                    <span class="input-group-text">${f.label} =</span>
+                    <input type="text" id="input_${f.id}" class="form-control" value="${f.def}" placeholder="số thực (1.5, -3/4)">
+                </div>
+            </div>`;
+        });
+        document.getElementById('inputsContainer').innerHTML = html;
+        renderMathInElement(document.body, { delimiters: [{left: '$$', right: '$$', display: true}] });
+        document.getElementById('resultContainer').classList.add('d-none');
+    }
+
+    function renderMarkdownWithKaTeX(mdText, targetEl) {
+        let mathStore = [];
+        let protectedText = mdText.replace(/\$\$([\s\S]*?)\$\$/g, (m, code) => {
+            let id = mathStore.length;
+            mathStore.push({ display: true, code });
+            return `@@MATHBLOCK_${id}@@`;
+        });
+        protectedText = protectedText.replace(/\$([^\$\n]+?)\$/g, (m, code) => {
+            let id = mathStore.length;
+            mathStore.push({ display: false, code });
+            return `@@MATHBLOCK_${id}@@`;
+        });
+
+        let html = marked.parse(protectedText);
+        html = html.replace(/@@MATHBLOCK_(\d+)@@/g, (m, id) => {
+            let item = mathStore[parseInt(id)];
+            return item.display ? `$$${item.code}$$` : `$${item.code}$`;
+        });
+
+        targetEl.innerHTML = html;
+        renderMathInElement(targetEl, {
+            delimiters: [
+                { left: '$$', right: '$$', display: true },
+                { left: '$', right: '$', display: false }
+            ],
+            throwOnError: false
+        });
+    }
+
+    // =========================================================================
+    // 3. BỘ PHÂN TÍCH TOÁN HỌC & TẠO MARKDOWN SGK
+    // =========================================================================
+    function runAnalysis() {
+        let p = {};
+        FORMS_CONFIG[currentType].fields.forEach(f => {
+            p[f.id] = Frac.fromInput(document.getElementById(`input_${f.id}`).value);
+        });
+
+        if (currentType !== 'bac1_1' && p.a.n === 0) {
+            alert("Hệ số a phải khác 0 đối với hàm đa thức!"); return;
+        }
+        if (currentType === 'bac1_1' && p.c.n === 0) {
+            alert("Hệ số c phải khác 0 đối với hàm phân thức bậc 1/1!"); return;
+        }
+        if (currentType === 'bac2_1' && p.p.n === 0) {
+            alert("Hệ số p phải khác 0 đối với hàm phân thức bậc 2/1!"); return;
+        }
+
+        const res = analyzeFunction(currentType, p);
+        currentRawMarkdown = res.markdown;
+
+        renderMarkdownWithKaTeX(res.markdown, document.getElementById('mdRenderedView'));
+        document.getElementById('mdRawView').value = res.markdown;
+        document.getElementById('resultContainer').classList.remove('d-none');
+
+        drawBBT(res);
+        drawGraph(res);
+    }
+
+    function analyzeFunction(type, p) {
+        let md = "";
+        let res = { type, params: p, bbtColumns: [], graphExtrema: [], asymptotes: {} };
+
+        if (type === 'bac2') {
+            const { a, b, c } = p;
+            res.yFn = (x) => a.val()*x*x + b.val()*x + c.val();
+            let eqStr = `${formatMonomialFrac(a, 'x^2', true)}${formatMonomialFrac(b, 'x')}${formatMonomialFrac(c, '')}`;
+            md += `### KHẢO SÁT HÀM SỐ BẬC HAI: $y = ${eqStr}$\n\n`;
+            md += `**1. Tập xác định:** $D = \\mathbb{R}$.\n\n`;
+
+            let x0Frac = b.neg().div(new Frac(2, 1).mul(a));
+            let y0Frac = c.sub(b.mul(b).div(new Frac(4, 1).mul(a)));
+            let isMin = a.n > 0;
+            let limVal = isMin ? '+\\infty' : '-\\infty';
+
+            md += `**2. Sự biến thiên:**\n\n`;
+            md += `- **Đạo hàm:** $y' = ${formatMonomialFrac(new Frac(2,1).mul(a), 'x', true)}${formatMonomialFrac(b, '')}$.\n\n`;
+            md += `- Cho $y' = 0 \\Leftrightarrow x = ${x0Frac.toLatex()}$.\n\n`;
+            md += `- **Khoảng đơn điệu:**\n`;
+            if (isMin) {
+                md += `  + Hàm số nghịch biến trên khoảng $(-\\infty; ${x0Frac.toLatex()})$.\n`;
+                md += `  + Hàm số đồng biến trên khoảng $(${x0Frac.toLatex()}; +\\infty)$.\n\n`;
+                md += `- **Cực trị:** Hàm số đạt **cực tiểu** tại $x = ${x0Frac.toLatex()}$; giá trị cực tiểu $y_{\\text{CT}} = ${y0Frac.toLatex()}$.\n\n`;
+            } else {
+                md += `  + Hàm số đồng biến trên khoảng $(-\\infty; ${x0Frac.toLatex()})$.\n`;
+                md += `  + Hàm số nghịch biến trên khoảng $(${x0Frac.toLatex()}; +\\infty)$.\n\n`;
+                md += `- **Cực trị:** Hàm số đạt **cực đại** tại $x = ${x0Frac.toLatex()}$; giá trị cực đại $y_{\\text{CĐ}} = ${y0Frac.toLatex()}$.\n\n`;
+            }
+            md += `- **Giới hạn tại vô cực:** $\\lim\\limits_{x \\to +\\infty} y = ${limVal}; \\quad \\lim\\limits_{x \\to -\\infty} y = ${limVal}$.\n\n`;
+            md += `**3. Đồ thị:**\n\n- Đỉnh parabol: $I(${x0Frac.toLatex()}; ${y0Frac.toLatex()})$.\n- Trục đối xứng: $x = ${x0Frac.toLatex()}$.\n`;
+
+            res.bbtColumns = [
+                { type: 'inf', xVal: -Infinity, xExact: { isFrac: false, text: "-∞" }, yLevel: isMin ? 'top' : 'bot', yExact: { text: isMin ? '+∞' : '-∞', isFrac: false } },
+                { type: 'extremum', xVal: x0Frac.val(), xExact: x0Frac.toExactObj(), extremumType: isMin ? 'min' : 'max', yLevel: isMin ? 'bot' : 'top', yExact: y0Frac.toExactObj() },
+                { type: 'inf', xVal: Infinity, xExact: { isFrac: false, text: "+∞" }, yLevel: isMin ? 'top' : 'bot', yExact: { text: isMin ? '+∞' : '-∞', isFrac: false } }
+            ];
+            res.signs = isMin ? ['-', '+'] : ['+', '-'];
+            res.graphExtrema = [{ x: x0Frac.val(), y: y0Frac.val() }];
+        }
+        else if (type === 'bac3') {
+            const { a, b, c, d } = p;
+            res.yFn = (x) => a.val()*x*x*x + b.val()*x*x + c.val()*x + d.val();
+            let eqStr = `${formatMonomialFrac(a, 'x^3', true)}${formatMonomialFrac(b, 'x^2')}${formatMonomialFrac(c, 'x')}${formatMonomialFrac(d, '')}`;
+            md += `### KHẢO SÁT HÀM SỐ BẬC BA: $y = ${eqStr}$\n\n`;
+            md += `**1. Tập xác định:** $D = \\mathbb{R}$.\n\n`;
+
+            let a_prime = new Frac(3, 1).mul(a);
+            let b_prime = new Frac(2, 1).mul(b);
+            let c_prime = c;
+            md += `**2. Sự biến thiên:**\n\n`;
+            md += `- **Đạo hàm:** $y' = ${formatMonomialFrac(a_prime, 'x^2', true)}${formatMonomialFrac(b_prime, 'x')}${formatMonomialFrac(c_prime, '')}$.\n\n`;
+
+            let delta = b_prime.mul(b_prime).sub(new Frac(4, 1).mul(a_prime).mul(c_prime));
+            let roots = solveQuadraticExact(a_prime, b_prime, c_prime);
+            let isApos = a.n > 0;
+            let limPlus = isApos ? '+\\infty' : '-\\infty';
+            let limMinus = isApos ? '-\\infty' : '+\\infty';
+
+            if (roots.length === 2) {
+                let r1 = roots[0], r2 = roots[1];
+                if (r1.val() > r2.val()) { let t = r1; r1 = r2; r2 = t; }
+
+                let alpha = new Frac(2, 1).mul(new Frac(3,1).mul(a).mul(c).sub(b.mul(b))).div(new Frac(9,1).mul(a));
+                let beta = new Frac(9, 1).mul(a).mul(d).sub(b.mul(c)).div(new Frac(9,1).mul(a));
+
+                let evalCubicExtremum = (rx) => {
+                    let t1 = alpha.mul(new Frac(rx.p, rx.r)).add(beta);
+                    let t2 = alpha.mul(new Frac(rx.q, rx.r));
+                    let commonDen = (t1.d * t2.d) / Frac.gcd(t1.d, t2.d);
+                    let newP = t1.n * (commonDen / t1.d);
+                    let newQ = t2.n * (commonDen / t2.d);
+                    return new ExactVal(newP, newQ, rx.m, commonDen);
+                };
+
+                let y1Exact = evalCubicExtremum(r1);
+                let y2Exact = evalCubicExtremum(r2);
+
+                md += `- Giải $y' = 0 \\Leftrightarrow x = ${r1.toLatex()}$ hoặc $x = ${r2.toLatex()}$.\n\n`;
+                md += `- **Cực trị:**\n`;
+                if (isApos) {
+                    md += `  + Hàm số đạt **cực đại** tại $x = ${r1.toLatex()}$, giá trị cực đại $y_{\\text{CĐ}} = ${y1Exact.toLatex()}$.\n`;
+                    md += `  + Hàm số đạt **cực tiểu** tại $x = ${r2.toLatex()}$, giá trị cực tiểu $y_{\\text{CT}} = ${y2Exact.toLatex()}$.\n\n`;
+                } else {
+                    md += `  + Hàm số đạt **cực tiểu** tại $x = ${r1.toLatex()}$, giá trị cực tiểu $y_{\\text{CT}} = ${y1Exact.toLatex()}$.\n`;
+                    md += `  + Hàm số đạt **cực đại** tại $x = ${r2.toLatex()}$, giá trị cực đại $y_{\\text{CĐ}} = ${y2Exact.toLatex()}$.\n\n`;
+                }
+
+                res.bbtColumns = [
+                    { type: 'inf', xVal: -Infinity, xExact: { isFrac: false, text: "-∞" }, yLevel: isApos ? 'bot' : 'top', yExact: { text: isApos ? '-∞' : '+∞', isFrac: false } },
+                    { type: 'extremum', xVal: r1.val(), xExact: r1.toExactObj(), extremumType: isApos ? 'max' : 'min', yLevel: isApos ? 'top' : 'bot', yExact: y1Exact.toExactObj() },
+                    { type: 'extremum', xVal: r2.val(), xExact: r2.toExactObj(), extremumType: isApos ? 'min' : 'max', yLevel: isApos ? 'bot' : 'top', yExact: y2Exact.toExactObj() },
+                    { type: 'inf', xVal: Infinity, xExact: { isFrac: false, text: "+∞" }, yLevel: isApos ? 'top' : 'bot', yExact: { text: isApos ? '+∞' : '-∞', isFrac: false } }
+                ];
+                res.signs = isApos ? ['+', '-', '+'] : ['-', '+', '-'];
+                res.graphExtrema = [{ x: r1.val(), y: y1Exact.val() }, { x: r2.val(), y: y2Exact.val() }];
+            } else if (delta.n === 0) {
+                let r0 = b_prime.neg().div(new Frac(2, 1).mul(a_prime));
+                let y0Val = res.yFn(r0.val());
+                let y0Frac = Frac.fromInput(y0Val);
+                md += `- Phương trình $y' = 0 \\Leftrightarrow x = ${r0.toLatex()}$ (nghiệm kép). Hàm số luôn ${isApos ? 'đồng biến' : 'nghịch biến'} trên $\\mathbb{R}$ và không có cực trị.\n\n`;
+
+                res.bbtColumns = [
+                    { type: 'inf', xVal: -Infinity, xExact: { isFrac: false, text: "-∞" }, yLevel: isApos ? 'bot' : 'top', yExact: { text: isApos ? '-∞' : '+∞', isFrac: false } },
+                    { type: 'stationary', xVal: r0.val(), xExact: r0.toExactObj(), yLevel: 'mid', yExact: y0Frac.toExactObj() },
+                    { type: 'inf', xVal: Infinity, xExact: { isFrac: false, text: "+∞" }, yLevel: isApos ? 'top' : 'bot', yExact: { text: isApos ? '+∞' : '-∞', isFrac: false } }
+                ];
+                res.signs = isApos ? ['+', '+'] : ['-', '-'];
+            } else {
+                md += `- Phương trình $y' = 0$ vô nghiệm ($\\Delta < 0$). Hàm số luôn ${isApos ? 'đồng biến' : 'nghịch biến'} trên $\\mathbb{R}$ và không có cực trị.\n\n`;
+                res.bbtColumns = [
+                    { type: 'inf', xVal: -Infinity, xExact: { isFrac: false, text: "-∞" }, yLevel: isApos ? 'bot' : 'top', yExact: { text: isApos ? '-∞' : '+∞', isFrac: false } },
+                    { type: 'inf', xVal: Infinity, xExact: { isFrac: false, text: "+∞" }, yLevel: isApos ? 'top' : 'bot', yExact: { text: isApos ? '+∞' : '-∞', isFrac: false } }
+                ];
+                res.signs = isApos ? ['+'] : ['-'];
+            }
+
+            md += `- **Giới hạn tại vô cực:** $\\lim\\limits_{x \\to +\\infty} y = ${limPlus}; \\quad \\lim\\limits_{x \\to -\\infty} y = ${limMinus}$.\n\n`;
+
+            let xUon = b.neg().div(new Frac(3, 1).mul(a));
+            let yUon = a.mul(xUon).mul(xUon).mul(xUon)
+                        .add(b.mul(xUon).mul(xUon))
+                        .add(c.mul(xUon))
+                        .add(d);
+
+            md += `**3. Đồ thị:**\n\n- Điểm uốn (tâm đối xứng): $I(${xUon.toLatex()}; ${yUon.toLatex()})$.\n- Giao điểm với trục tung $Oy$: $(0; ${d.toLatex()})$.\n`;
+            
+            res.inflectionPoint = { x: xUon.val(), y: yUon.val(), label: `I(${xUon.toPlain()}; ${yUon.toPlain()})` };
+        }
+        else if (type === 'bac1_1') {
+            const { a, b, c, d } = p;
+            res.yFn = (x) => (a.val()*x + b.val())/(c.val()*x + d.val());
+            let x0 = d.neg().div(c);
+            let det = a.mul(d).sub(b.mul(c));
+            let isPos = det.n > 0;
+            let tcn = a.div(c);
+
+            let tuStr = `${formatMonomialFrac(a, 'x', true)}${formatMonomialFrac(b, '')}`;
+            let mauStr = `${formatMonomialFrac(c, 'x', true)}${formatMonomialFrac(d, '')}`;
+            md += `### KHẢO SÁT HÀM SỐ PHÂN THỨC BẬC NHẤT / BẬC NHẤT\n\n`;
+            md += `$$y = \\frac{${tuStr}}{${mauStr}}$$\n\n`;
+            md += `**1. Tập xác định:** $D = \\mathbb{R} \\setminus \\{${x0.toLatex()}\\}.$\n\n`;
+            md += `**2. Sự biến thiên:**\n\n- **Đạo hàm:** $y' = \\frac{${det.toLatex()}}{(${mauStr})^2} ${isPos ? '> 0' : '< 0'}, \\forall x \\neq ${x0.toLatex()}$.\n\n`;
+            md += `- Hàm số ${isPos ? 'đồng biến' : 'nghịch biến'} trên từng khoảng $(-\\infty; ${x0.toLatex()})$ và $(${x0.toLatex()}; +\\infty)$.\n\n`;
+            md += `- **Cực trị:** Hàm số không có cực trị.\n\n`;
+
+            let yPlus = isPos ? '-\\infty' : '+\\infty';
+            let yMinus = isPos ? '+\\infty' : '-\\infty';
+            md += `- **Giới hạn và tiệm cận:**\n`;
+            md += `  + $\\lim\\limits_{x \\to +\\infty} y = ${tcn.toLatex()}; \\quad \\lim\\limits_{x \\to -\\infty} y = ${tcn.toLatex()} \\Rightarrow$ Đường thẳng $y = ${tcn.toLatex()}$ là **tiệm cận ngang**.\n`;
+            md += `  + $\\lim\\limits_{x \\to ${x0.toLatex()}^+} y = ${yPlus}; \\quad \\lim\\limits_{x \\to ${x0.toLatex()}^-} y = ${yMinus} \\Rightarrow$ Đường thẳng $x = ${x0.toLatex()}$ là **tiệm cận đứng**.\n\n`;
+            md += `**3. Đồ thị:**\n\n- Tâm đối xứng: $I(${x0.toLatex()}; ${tcn.toLatex()})$.\n- Giao điểm với $Oy$: $(0; ${b.div(d).toLatex()})$.\n`;
+
+            res.asymptotes = { 
+                v: x0.val(), 
+                h: tcn.val(), 
+                vPlain: `x = ${x0.toPlain()}`, 
+                hPlain: `y = ${tcn.toPlain()}` 
+            };
+            res.discontinuity = x0.val();
+            res.symmetryCenter = { 
+                x: x0.val(), 
+                y: tcn.val(), 
+                label: `I(${x0.toPlain()}; ${tcn.toPlain()})` 
+            };
+
+            res.bbtColumns = [
+                { type: 'inf', xVal: -Infinity, xExact: { isFrac: false, text: "-∞" }, yLevel: 'mid', yExact: tcn.toExactObj() },
+                { type: 'disc', xVal: x0.val(), xExact: x0.toExactObj(), 
+                  leftY: { yLevel: isPos ? 'top' : 'bot', yExact: { text: isPos ? '+∞' : '-∞', isFrac: false } },
+                  rightY: { yLevel: isPos ? 'bot' : 'top', yExact: { text: isPos ? '-∞' : '+∞', isFrac: false } }
+                },
+                { type: 'inf', xVal: Infinity, xExact: { isFrac: false, text: "+∞" }, yLevel: 'mid', yExact: tcn.toExactObj() }
+            ];
+            res.signs = isPos ? ['+', '+'] : ['-', '-'];
+        }
+        else if (type === 'bac2_1') {
+            const { a, b, c, p: pp, q } = p;
+            res.yFn = (x) => (a.val()*x*x + b.val()*x + c.val())/(pp.val()*x + q.val());
+            let x0 = q.neg().div(pp);
+            
+            let m_tc = a.div(pp);
+            let n_tc = b.mul(pp).sub(a.mul(q)).div(pp.mul(pp));
+            let rem = c.sub(n_tc.mul(q));
+
+            let A = a.mul(pp);
+            let B = new Frac(2, 1).mul(a).mul(q);
+            let C = b.mul(q).sub(c.mul(pp));
+            let delta = B.mul(B).sub(new Frac(4,1).mul(A).mul(C));
+            let roots = solveQuadraticExact(A, B, C);
+            let isApos = A.n > 0;
+
+            let tuStr = `${formatMonomialFrac(a, 'x^2', true)}${formatMonomialFrac(b, 'x')}${formatMonomialFrac(c, '')}`;
+            let mauStr = `${formatMonomialFrac(pp, 'x', true)}${formatMonomialFrac(q, '')}`;
+            let tcXienStr = formatLinear(m_tc, n_tc);
+            let remSign = rem.n >= 0 ? '+' : '-';
+            let remAbs = new Frac(Math.abs(rem.n), rem.d);
+
+            md += `### KHẢO SÁT HÀM SỐ PHÂN THỨC BẬC HAI / BẬC NHẤT\n\n`;
+            md += `$$y = \\frac{${tuStr}}{${mauStr}} = ${tcXienStr} ${remSign} \\frac{${remAbs.toLatex()}}{${mauStr}}$$\n\n`;
+            md += `**1. Tập xác định:** $D = \\mathbb{R} \\setminus \\{${x0.toLatex()}\\}.$\n\n`;
+            md += `**2. Sự biến thiên:**\n\n`;
+
+            let dyTuStr = `${formatMonomialFrac(A, 'x^2', true)}${formatMonomialFrac(B, 'x')}${formatMonomialFrac(C, '')}`;
+            md += `- **Đạo hàm:** $y' = \\frac{${dyTuStr}}{(${mauStr})^2}$.\n\n`;
+
+            let yTam = m_tc.mul(x0).add(n_tc);
+            res.asymptotes = { 
+                v: x0.val(), 
+                oblique: { m: m_tc.val(), n: n_tc.val(), mFrac: m_tc, nFrac: n_tc },
+                vPlain: `x = ${x0.toPlain()}`,
+                obliquePlain: `y = ${formatPlainLinear(m_tc, n_tc)}`
+            };
+            res.discontinuity = x0.val();
+            res.symmetryCenter = { 
+                x: x0.val(), 
+                y: yTam.val(), 
+                label: `I(${x0.toPlain()}; ${yTam.toPlain()})` 
+            };
+
+            let limRightDisc = (rem.mul(pp).n > 0) ? '+\\infty' : '-\\infty';
+            let limLeftDisc = (rem.mul(pp).n > 0) ? '-\\infty' : '+\\infty';
+
+            if (roots.length === 2) {
+                let r1 = roots[0], r2 = roots[1];
+                if (r1.val() > r2.val()) { let t = r1; r1 = r2; r2 = t; }
+
+                let evalYExact = (rx) => {
+                    let mult = new Frac(2, 1).mul(a).div(pp);
+                    let add = b.div(pp);
+                    let t1 = mult.mul(new Frac(rx.p, rx.r)).add(add);
+                    let t2 = mult.mul(new Frac(rx.q, rx.r));
+                    let commonDen = (t1.d * t2.d) / Frac.gcd(t1.d, t2.d);
+                    return new ExactVal(t1.n * (commonDen / t1.d), t2.n * (commonDen / t2.d), rx.m, commonDen);
+                };
+
+                let y1Exact = evalYExact(r1);
+                let y2Exact = evalYExact(r2);
+
+                md += `- Cho $y' = 0 \\Leftrightarrow x = ${r1.toLatex()}$ hoặc $x = ${r2.toLatex()}$.\n\n`;
+                md += `- **Khoảng đơn điệu:**\n`;
+                if (isApos) {
+                    md += `  + Đồng biến trên $(-\\infty; ${r1.toLatex()})$ và $(${r2.toLatex()}; +\\infty)$.\n`;
+                    md += `  + Nghịch biến trên $(${r1.toLatex()}; ${x0.toLatex()})$ và $(${x0.toLatex()}; ${r2.toLatex()})$.\n\n`;
+                    md += `- **Cực trị:**\n`;
+                    md += `  + Cực đại tại $x = ${r1.toLatex()}$, giá trị cực đại $y_{\\text{CĐ}} = ${y1Exact.toLatex()}$.\n`;
+                    md += `  + Cực tiểu tại $x = ${r2.toLatex()}$, giá trị cực tiểu $y_{\\text{CT}} = ${y2Exact.toLatex()}$.\n\n`;
+                } else {
+                    md += `  + Nghịch biến trên $(-\\infty; ${r1.toLatex()})$ và $(${r2.toLatex()}; +\\infty)$.\n`;
+                    md += `  + Đồng biến trên $(${r1.toLatex()}; ${x0.toLatex()})$ và $(${x0.toLatex()}; ${r2.toLatex()})$.\n\n`;
+                    md += `- **Cực trị:**\n`;
+                    md += `  + Cực tiểu tại $x = ${r1.toLatex()}$, giá trị cực tiểu $y_{\\text{CT}} = ${y1Exact.toLatex()}$.\n`;
+                    md += `  + Cực đại tại $x = ${r2.toLatex()}$, giá trị cực đại $y_{\\text{CĐ}} = ${y2Exact.toLatex()}$.\n\n`;
+                }
+
+                res.bbtColumns = [
+                    { type: 'inf', xVal: -Infinity, xExact: { isFrac: false, text: "-∞" }, yLevel: isApos ? 'bot' : 'top', yExact: { text: isApos ? '-∞' : '+∞', isFrac: false } },
+                    { type: 'extremum', xVal: r1.val(), xExact: r1.toExactObj(), extremumType: isApos ? 'max' : 'min', yLevel: isApos ? 'top' : 'bot', yExact: y1Exact.toExactObj() },
+                    { type: 'disc', xVal: x0.val(), xExact: x0.toExactObj(),
+                      leftY: { yLevel: isApos ? 'bot' : 'top', yExact: { text: isApos ? '-∞' : '+∞', isFrac: false } },
+                      rightY: { yLevel: isApos ? 'top' : 'bot', yExact: { text: isApos ? '+∞' : '-∞', isFrac: false } }
+                    },
+                    { type: 'extremum', xVal: r2.val(), xExact: r2.toExactObj(), extremumType: isApos ? 'min' : 'max', yLevel: isApos ? 'bot' : 'top', yExact: y2Exact.toExactObj() },
+                    { type: 'inf', xVal: Infinity, xExact: { isFrac: false, text: "+∞" }, yLevel: isApos ? 'top' : 'bot', yExact: { text: isApos ? '+∞' : '-∞', isFrac: false } }
+                ];
+                res.signs = isApos ? ['+', '-', '-', '+'] : ['-', '+', '+', '-'];
+                res.graphExtrema = [{ x: r1.val(), y: y1Exact.val() }, { x: r2.val(), y: y2Exact.val() }];
+            } else {
+                md += `- Phương trình $y' = 0$ vô nghiệm (hoặc có nghiệm kép tại điểm gián đoạn).\n\n`;
+                md += `- Vì $y' ${isApos ? '> 0' : '< 0'}, \\forall x \\neq ${x0.toLatex()}$ nên hàm số luôn ${isApos ? 'đồng biến' : 'nghịch biến'} trên $(-\\infty; ${x0.toLatex()})$ và $(${x0.toLatex()}; +\\infty)$.\n\n`;
+                md += `- **Cực trị:** Hàm số không có cực trị.\n\n`;
+
+                res.bbtColumns = [
+                    { type: 'inf', xVal: -Infinity, xExact: { isFrac: false, text: "-∞" }, yLevel: isApos ? 'bot' : 'top', yExact: { text: isApos ? '-∞' : '+∞', isFrac: false } },
+                    { type: 'disc', xVal: x0.val(), xExact: x0.toExactObj(),
+                      leftY: { yLevel: isApos ? 'top' : 'bot', yExact: { text: isApos ? '+∞' : '-∞', isFrac: false } },
+                      rightY: { yLevel: isApos ? 'bot' : 'top', yExact: { text: isApos ? '-∞' : '+∞', isFrac: false } }
+                    },
+                    { type: 'inf', xVal: Infinity, xExact: { isFrac: false, text: "+∞" }, yLevel: isApos ? 'top' : 'bot', yExact: { text: isApos ? '+∞' : '-∞', isFrac: false } }
+                ];
+                res.signs = isApos ? ['+', '+'] : ['-', '-'];
+                res.graphExtrema = [];
+            }
+
+            md += `- **Tiệm cận:**\n`;
+            md += `  + Tiệm cận đứng: đường thẳng $x = ${x0.toLatex()}$ (do $\\lim\\limits_{x \\to ${x0.toLatex()}^+} y = ${limRightDisc}$ và $\\lim\\limits_{x \\to ${x0.toLatex()}^-} y = ${limLeftDisc}$).\n`;
+            md += `  + Tiệm cận xiên: đường thẳng $y = ${tcXienStr}$ (do $\\lim\\limits_{x \\to +\\infty} [y - (${tcXienStr})] = 0$ và $\\lim\\limits_{x \\to -\\infty} [y - (${tcXienStr})] = 0$).\n`;
+            md += `  + Giới hạn tại vô cực: $\\lim\\limits_{x \\to +\\infty} y = ${isApos ? '+\\infty' : '-\\infty'}; \\quad \\lim\\limits_{x \\to -\\infty} y = ${isApos ? '-\\infty' : '+\\infty'}$.\n\n`;
+
+            md += `**3. Đồ thị:**\n\n- Giao điểm hai đường tiệm cận (tâm đối xứng): $I(${x0.toLatex()}; ${yTam.toLatex()})$.\n`;
+            md += `- Giao điểm với trục tung $Oy$: $(0; ${c.div(q).toLatex()})$.\n`;
+        }
+        else if (type === 'trungphuong') {
+            const { a, b, c } = p;
+            res.yFn = (x) => a.val()*Math.pow(x,4) + b.val()*x*x + c.val();
+            let check = b.neg().div(new Frac(2,1).mul(a));
+            let isApos = a.n > 0;
+            let limVal = isApos ? '+\\infty' : '-\\infty';
+
+            let eqStr = `${formatMonomialFrac(a, 'x^4', true)}${formatMonomialFrac(b, 'x^2')}${formatMonomialFrac(c, '')}`;
+            md += `### KHẢO SÁT HÀM SỐ TRÙNG PHƯƠNG: $y = ${eqStr}$\n\n`;
+            md += `**1. Tập xác định:** $D = \\mathbb{R}$.\n\n`;
+
+            if (check.n > 0) {
+                let prod = check.n * check.d;
+                let k = 1, m = prod;
+                for (let d = 2; d * d <= m; d++) {
+                    while (m % (d * d) === 0) { k *= d; m = Math.floor(m / (d * d)); }
+                }
+                let rPos = new ExactVal(0, k, m, check.d);
+                let rNeg = new ExactVal(0, -k, m, check.d);
+                let x0_val = rPos.val();
+                let yExtremumFrac = c.sub(b.mul(b).div(new Frac(4,1).mul(a)));
+                let y0Frac = c;
+
+                md += `**2. Sự biến thiên:**\n\n- Đạo hàm: $y' = ${formatMonomialFrac(new Frac(4,1).mul(a), 'x^3', true)}${formatMonomialFrac(new Frac(2,1).mul(b), 'x')}$.\n\n`;
+                md += `- Cho $y' = 0 \\Leftrightarrow x = 0$ hoặc $x = \\pm ${rPos.toLatex()}$.\n\n`;
+                md += `- **Cực trị:**\n`;
+                if (isApos) {
+                    md += `  + Cực đại tại $x = 0$, giá trị cực đại $y_{\\text{CĐ}} = ${y0Frac.toLatex()}$.\n`;
+                    md += `  + Cực tiểu tại $x = \\pm ${rPos.toLatex()}$, giá trị cực tiểu $y_{\\text{CT}} = ${yExtremumFrac.toLatex()}$.\n\n`;
+                } else {
+                    md += `  + Cực tiểu tại $x = 0$, giá trị cực tiểu $y_{\\text{CT}} = ${y0Frac.toLatex()}$.\n`;
+                    md += `  + Cực đại tại $x = \\pm ${rPos.toLatex()}$, giá trị cực đại $y_{\\text{CĐ}} = ${yExtremumFrac.toLatex()}$.\n\n`;
+                }
+
+                res.bbtColumns = [
+                    { type: 'inf', xVal: -Infinity, xExact: { isFrac: false, text: "-∞" }, yLevel: isApos ? 'top' : 'bot', yExact: { text: isApos ? '+∞' : '-∞', isFrac: false } },
+                    { type: 'extremum', xVal: -x0_val, xExact: rNeg.toExactObj(), extremumType: isApos ? 'min' : 'max', yLevel: isApos ? 'bot' : 'top', yExact: yExtremumFrac.toExactObj() },
+                    { type: 'extremum', xVal: 0, xExact: { isFrac: false, text: "0" }, extremumType: isApos ? 'max' : 'min', yLevel: isApos ? 'top' : 'bot', yExact: y0Frac.toExactObj() },
+                    { type: 'extremum', xVal: x0_val, xExact: rPos.toExactObj(), extremumType: isApos ? 'min' : 'max', yLevel: isApos ? 'bot' : 'top', yExact: yExtremumFrac.toExactObj() },
+                    { type: 'inf', xVal: Infinity, xExact: { isFrac: false, text: "+∞" }, yLevel: isApos ? 'top' : 'bot', yExact: { text: isApos ? '+∞' : '-∞', isFrac: false } }
+                ];
+                res.signs = isApos ? ['-', '+', '-', '+'] : ['+', '-', '+', '-'];
+                res.graphExtrema = [
+                    { x: -x0_val, y: yExtremumFrac.val() },
+                    { x: 0, y: y0Frac.val() },
+                    { x: x0_val, y: yExtremumFrac.val() }
+                ];
+            } else {
+                let y0Frac = c;
+                md += `**2. Sự biến thiên:**\n\n- Đạo hàm: $y' = ${formatMonomialFrac(new Frac(4,1).mul(a), 'x^3', true)}${formatMonomialFrac(new Frac(2,1).mul(b), 'x')}$.\n\n`;
+                md += `- Cho $y' = 0 \\Leftrightarrow x = 0$.\n\n`;
+                md += `- **Cực trị:** Hàm số đạt ${isApos ? 'cực tiểu' : 'cực đại'} tại $x = 0$, giá trị cực trị là $y = ${y0Frac.toLatex()}$.\n\n`;
+
+                res.bbtColumns = [
+                    { type: 'inf', xVal: -Infinity, xExact: { isFrac: false, text: "-∞" }, yLevel: isApos ? 'top' : 'bot', yExact: { text: isApos ? '+∞' : '-∞', isFrac: false } },
+                    { type: 'extremum', xVal: 0, xExact: { isFrac: false, text: "0" }, extremumType: isApos ? 'min' : 'max', yLevel: isApos ? 'top' : 'bot', yExact: y0Frac.toExactObj() },
+                    { type: 'inf', xVal: Infinity, xExact: { isFrac: false, text: "+∞" }, yLevel: isApos ? 'top' : 'bot', yExact: { text: isApos ? '+∞' : '-∞', isFrac: false } }
+                ];
+                res.signs = isApos ? ['-', '+'] : ['+', '-'];
+                res.graphExtrema = [{ x: 0, y: y0Frac.val() }];
+            }
+
+            md += `- **Giới hạn tại vô cực:** $\\lim\\limits_{x \\to +\\infty} y = ${limVal}; \\quad \\lim\\limits_{x \\to -\\infty} y = ${limVal}$.\n\n`;
+            md += `**3. Đồ thị:**\n\n- Trục đối xứng: trục tung $Oy$.\n- Giao điểm với trục tung $Oy$: $(0; ${c.toLatex()})$.\n`;
+        }
+
+        res.markdown = md;
+        return res;
+    }
+
+    // =========================================================================
+    // 4. VẼ BẢNG BIẾN THIÊN VECTOR CHUẨN SGK KNTT
+    // =========================================================================
+    function setupHiDPICanvas(canvas, width, height) {
+        const dpr = window.devicePixelRatio || 2;
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+        canvas.style.width = width + 'px';
+        canvas.style.height = height + 'px';
+        const ctx = canvas.getContext('2d');
+        ctx.scale(dpr, dpr);
+        return ctx;
+    }
+
+    function drawExactValue(ctx, obj, x, y, align = 'center') {
+        if (!obj) return 0;
+        ctx.save();
+        ctx.fillStyle = "#0f172a";
+
+        if (!obj.isFrac) {
+            ctx.font = "italic 16px 'Times New Roman', serif";
+            ctx.textAlign = align;
+            ctx.textBaseline = "middle";
+            ctx.fillText(obj.text || "0", x, y);
+            let w = ctx.measureText(obj.text || "0").width;
+            ctx.restore();
+            return w;
+        }
+
+        ctx.font = "italic 13px 'Times New Roman', serif";
+        let numStr = obj.num || "0";
+        let denStr = obj.den || "1";
+        let wNum = ctx.measureText(numStr).width;
+        let wDen = ctx.measureText(denStr).width;
+        let barW = Math.max(wNum, wDen) + 6;
+        let hasSign = obj.sign === "-";
+        let signW = hasSign ? 9 : 0;
+        let totalW = barW + signW;
+
+        let startX = x - totalW / 2;
+        if (align === 'left') startX = x;
+        if (align === 'right') startX = x - totalW;
+
+        if (hasSign) {
+            ctx.font = "bold 15px 'Times New Roman', serif";
+            ctx.textAlign = "left";
+            ctx.textBaseline = "middle";
+            ctx.fillText("-", startX, y);
+        }
+
+        let barStart = startX + signW;
+        let barEnd = barStart + barW;
+        let midX = (barStart + barEnd) / 2;
+
+        ctx.strokeStyle = "#0f172a";
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(barStart, y);
+        ctx.lineTo(barEnd, y);
+        ctx.stroke();
+
+        ctx.font = "italic 13px 'Times New Roman', serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "bottom";
+        ctx.fillText(numStr, midX, y - 2);
+
+        ctx.textBaseline = "top";
+        ctx.fillText(denStr, midX, y + 2);
+
+        ctx.restore();
+        return totalW;
+    }
+
+    function drawBBT(data) {
+        const canvas = document.getElementById('bbtCanvas');
+        const W = 700;
+        const H = 280;
+        const ctx = setupHiDPICanvas(canvas, W, H);
+
+        ctx.clearRect(0, 0, W, H);
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, W, H);
+
+        ctx.strokeStyle = "#1e293b";
+        ctx.lineWidth = 1.3;
+        ctx.strokeRect(8, 8, W - 16, H - 16);
+
+        const yLine1 = 54;
+        const yLine2 = 98;
+        const headerW = 75;
+
+        ctx.beginPath();
+        ctx.moveTo(8, yLine1); ctx.lineTo(W - 8, yLine1);
+        ctx.moveTo(8, yLine2); ctx.lineTo(W - 8, yLine2);
+        ctx.moveTo(headerW, 8); ctx.lineTo(headerW, H - 8);
+        ctx.stroke();
+
+        ctx.fillStyle = "#0f172a";
+        ctx.font = "italic bold 18px 'Times New Roman', serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("x", headerW / 2, 30);
+        ctx.fillText("y'", headerW / 2, 76);
+        ctx.fillText("y", headerW / 2, 185);
+
+        const cols = data.bbtColumns || [];
+        const nCols = cols.length;
+        if (nCols < 2) return;
+
+        const usableW = W - headerW - 40;
+        const xStep = usableW / (nCols - 1);
+
+        let colX = [];
+        for (let i = 0; i < nCols; i++) {
+            colX.push(headerW + 20 + i * xStep);
+        }
+
+        const yTop = 125; 
+        const yMid = 185; 
+        const yBot = 245; 
+        const getYPos = (lvl) => lvl === 'top' ? yTop : (lvl === 'bot' ? yBot : yMid);
+
+        // 1. Dòng x
+        for (let i = 0; i < nCols; i++) {
+            let px = colX[i];
+            let c = cols[i];
+
+            drawExactValue(ctx, c.xExact, px, 31, 'center');
+
+            if (c.type === 'disc') {
+                ctx.beginPath();
+                ctx.moveTo(px - 2.5, yLine1); ctx.lineTo(px - 2.5, H - 8);
+                ctx.moveTo(px + 2.5, yLine1); ctx.lineTo(px + 2.5, H - 8);
+                ctx.lineWidth = 1.3;
+                ctx.strokeStyle = "#000000";
+                ctx.stroke();
+            } else if (c.type === 'extremum' || c.type === 'stationary') {
+                ctx.fillStyle = "#0f172a";
+                ctx.font = "italic 16px 'Times New Roman', serif";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText("0", px, 76);
+            }
+        }
+
+        // 2. Dòng y'
+        if (data.signs) {
+            ctx.font = "bold 18px 'Times New Roman', serif";
+            ctx.fillStyle = "#0f172a";
+            for (let i = 0; i < data.signs.length; i++) {
+                let midX = (colX[i] + colX[i + 1]) / 2;
+                ctx.fillText(data.signs[i], midX, 76);
+            }
+        }
+
+        // 3. Dòng y
+        let nodes = [];
+        for (let i = 0; i < nCols; i++) {
+            let c = cols[i];
+            let px = colX[i];
+
+            if (i === 0) {
+                let py = getYPos(c.yLevel);
+                let w = drawExactValue(ctx, c.yExact, px + 10, py, 'left');
+                nodes.push({ colIdx: 0, xAttach: px + 10 + w + 8, yAttach: py, role: 'start' });
+            } 
+            else if (i === nCols - 1) {
+                let py = getYPos(c.yLevel);
+                let w = drawExactValue(ctx, c.yExact, px - 10, py, 'right');
+                nodes.push({ colIdx: i, xAttach: px - 10 - w - 8, yAttach: py, role: 'end' });
+            } 
+            else if (c.type === 'extremum' || c.type === 'stationary') {
+                let py = getYPos(c.yLevel);
+                let w = drawExactValue(ctx, c.yExact, px, py, 'center');
+                let pad = Math.max(w / 2 + 6, 14);
+                nodes.push({
+                    colIdx: i,
+                    xIn: px - pad,
+                    yIn: py,
+                    xOut: px + pad,
+                    yOut: py,
+                    role: 'extremum'
+                });
+            } 
+            else if (c.type === 'disc') {
+                let pyLeft = getYPos(c.leftY.yLevel);
+                let wLeft = drawExactValue(ctx, c.leftY.yExact, px - 12, pyLeft, 'right');
+
+                let pyRight = getYPos(c.rightY.yLevel);
+                let wRight = drawExactValue(ctx, c.rightY.yExact, px + 12, pyRight, 'left');
+
+                nodes.push({
+                    colIdx: i,
+                    xIn: px - 12 - wLeft - 8,
+                    yIn: pyLeft,
+                    xOut: px + 12 + wRight + 8,
+                    yOut: pyRight,
+                    role: 'disc'
+                });
+            }
+        }
+
+        // 4. Mũi tên biến thiên
+        for (let i = 0; i < nCols - 1; i++) {
+            let leftNode = nodes[i];
+            let rightNode = nodes[i + 1];
+
+            let startX = (leftNode.role === 'extremum' || leftNode.role === 'disc') ? leftNode.xOut : leftNode.xAttach;
+            let startY = (leftNode.role === 'extremum' || leftNode.role === 'disc') ? leftNode.yOut : leftNode.yAttach;
+
+            let endX = (rightNode.role === 'extremum' || rightNode.role === 'disc') ? rightNode.xIn : rightNode.xAttach;
+            let endY = (rightNode.role === 'extremum' || rightNode.role === 'disc') ? rightNode.yIn : rightNode.yAttach;
+
+            drawVectorArrow(ctx, startX, startY, endX, endY, "#0284c7");
+        }
+    }
+
+    function drawVectorArrow(ctx, fromx, fromy, tox, toy, color) {
+        const headlen = 9;
+        const angle = Math.atan2(toy - fromy, tox - fromx);
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+        ctx.lineWidth = 1.8;
+
+        ctx.beginPath();
+        ctx.moveTo(fromx, fromy);
+        ctx.lineTo(tox, toy);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(tox, toy);
+        ctx.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
+        ctx.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
+        ctx.closePath();
+        ctx.fill();
+    }
+
+    // =========================================================================
+    // 5. THUẬT TOÁN TÍNH TOÁN BÁN KÍNH KHUNG HÌNH (AUTO-FRAMING TOÁN HỌC)
+    // =========================================================================
+    function computeGraphBounds(data) {
+        let xs = [0.0];
+        let ys = [0.0];
+
+        if (data.graphExtrema) {
+            data.graphExtrema.forEach(pt => { xs.push(pt.x); ys.push(pt.y); });
+        }
+        if (data.inflectionPoint) {
+            xs.push(data.inflectionPoint.x); ys.push(data.inflectionPoint.y);
+        }
+        if (data.symmetryCenter) {
+            xs.push(data.symmetryCenter.x); ys.push(data.symmetryCenter.y);
+        }
+
+        let disc = data.discontinuity;
+        if (disc !== undefined) xs.push(disc);
+
+        let asym = data.asymptotes || {};
+        if (asym.v !== undefined) xs.push(asym.v);
+        if (asym.h !== undefined) ys.push(asym.h);
+
+        let x_min, x_max, y_min, y_max;
+
+        if (disc !== undefined) {
+            // HÀM PHÂN THỨC: CĂN GIỮA ĐỐI XỨNG QUANH TIỆM CẬN ĐỨNG ĐỂ THẤY ĐỦ 2 NHÁNH HYPEBOL
+            let x0 = disc;
+            let rx = Math.max(5.5, Math.abs(x0) + 2.5);
+            xs.forEach(x => { rx = Math.max(rx, Math.abs(x - x0) + 2.5); });
+            x_min = Math.min(x0 - rx, -4.0);
+            x_max = Math.max(x0 + rx, 4.0);
+        } else {
+            // ĐA THỨC BẬC 2, 3, TRÙNG PHƯƠNG
+            let min_x = Math.min(...xs), max_x = Math.max(...xs);
+            let span_x = Math.max(max_x - min_x, 4.0);
+            let cx = (min_x + max_x) / 2.0;
+            let rx = Math.max(span_x * 0.85, 5.0);
+            x_min = Math.min(cx - rx, -5.0);
+            x_max = Math.max(cx + rx, 5.0);
+        }
+
+        if (asym.h !== undefined) {
+            // HÀM BẬC 1/1 CÓ TIỆM CẬN NGANG
+            let y0 = asym.h;
+            let ry = Math.max(5.0, Math.abs(y0) + 2.5);
+            y_min = Math.min(y0 - ry, -4.0);
+            y_max = Math.max(y0 + ry, 4.0);
+        } else if (asym.oblique !== undefined && disc !== undefined) {
+            // HÀM BẬC 2/1 CÓ TIỆM CẬN XIÊN
+            let m = asym.oblique.m, n = asym.oblique.n;
+            let y_I = m * disc + n;
+            let min_y = Math.min(...ys), max_y = Math.max(...ys);
+            let ry = Math.max(5.0, Math.max(Math.abs(min_y - y_I), Math.abs(max_y - y_I)) + 2.5);
+            y_min = Math.min(y_I - ry, -4.0);
+            y_max = Math.max(y_I + ry, 4.0);
+        } else {
+            // ĐA THỨC
+            let min_y = Math.min(...ys), max_y = Math.max(...ys);
+            let span_y = Math.max(max_y - min_y, 4.0);
+            let cy = (min_y + max_y) / 2.0;
+            let ry = Math.max(span_y * 0.85, 5.0);
+            y_min = Math.min(cy - ry, -5.0);
+            y_max = Math.max(cy + ry, 5.0);
+        }
+
+        return {
+            xMin: Math.floor(x_min),
+            xMax: Math.ceil(x_max),
+            yMin: Math.floor(y_min),
+            yMax: Math.ceil(y_max)
+        };
+    }
+
+    // =========================================================================
+    // 6. VẼ ĐỒ THỊ HÀM SỐ TRÊN HỆ TRỤC OXY (TRỌN VẸN 2 NHÁNH HYPEBOL)
+    // =========================================================================
+    function drawCanvasBadge(ctx, text, x, y, W, H, options = {}) {
+        ctx.save();
+        ctx.font = options.font || "bold 13px 'Times New Roman', serif";
+        let paddingX = options.paddingX || 6;
+        let paddingY = options.paddingY || 3;
+        let textW = ctx.measureText(text).width;
+        let textH = 14;
+        let boxW = textW + paddingX * 2;
+        let boxH = textH + paddingY * 2;
+
+        let drawX = x;
+        if (options.align === 'center') drawX = x - boxW / 2;
+        else if (options.align === 'right') drawX = x - boxW;
+
+        let drawY = y;
+        if (options.baseline === 'middle') drawY = y - boxH / 2;
+        else if (options.baseline === 'bottom') drawY = y - boxH;
+
+        let margin = 6;
+        if (drawX < margin) drawX = margin;
+        if (drawX + boxW > W - margin) drawX = W - margin - boxW;
+        if (drawY < margin) drawY = margin;
+        if (drawY + boxH > H - margin) drawY = H - margin - boxH;
+
+        ctx.fillStyle = "rgba(255, 255, 255, 0.94)";
+        ctx.strokeStyle = options.borderColor || "#dc2626";
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        if (ctx.roundRect) {
+            ctx.roundRect(drawX, drawY, boxW, boxH, 4);
+        } else {
+            ctx.rect(drawX, drawY, boxW, boxH);
+        }
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = options.color || "#b91c1c";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(text, drawX + boxW / 2, drawY + boxH / 2);
+        ctx.restore();
+    }
+
+    function drawGraph(data) {
+        const canvas = document.getElementById('graphCanvas');
+        const W = 600;
+        const H = 600;
+        const ctx = setupHiDPICanvas(canvas, W, H);
+
+        ctx.clearRect(0, 0, W, H);
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, W, H);
+
+        // TÍNH BÁN KÍNH KHUNG NHÌN ĐỘNG THÔNG MINH
+        const bounds = computeGraphBounds(data);
+        const { xMin, xMax, yMin, yMax } = bounds;
+
+        const toPxX = (x) => ((x - xMin) / (xMax - xMin)) * W;
+        const toPxY = (y) => H - ((y - yMin) / (yMax - yMin)) * H;
+
+        // Lưới tọa độ
+        let stepGrid = (xMax - xMin > 18 || yMax - yMin > 18) ? 2 : 1;
+        ctx.strokeStyle = "#f1f5f9";
+        ctx.lineWidth = 1;
+        for (let x = Math.ceil(xMin); x <= Math.floor(xMax); x += stepGrid) {
+            ctx.beginPath(); ctx.moveTo(toPxX(x), 0); ctx.lineTo(toPxX(x), H); ctx.stroke();
+        }
+        for (let y = Math.ceil(yMin); y <= Math.floor(yMax); y += stepGrid) {
+            ctx.beginPath(); ctx.moveTo(0, toPxY(y)); ctx.lineTo(W, toPxY(y)); ctx.stroke();
+        }
+
+        // Trục tọa độ Oxy
+        ctx.strokeStyle = "#334155";
+        ctx.fillStyle = "#334155";
+        ctx.lineWidth = 1.6;
+
+        const py0 = toPxY(0);
+        const px0 = toPxX(0);
+
+        // Trục Ox
+        ctx.beginPath(); ctx.moveTo(0, py0); ctx.lineTo(W, py0); ctx.stroke();
+        drawVectorArrow(ctx, W - 15, py0, W, py0, "#334155");
+        ctx.font = "italic 16px 'Times New Roman', serif";
+        ctx.fillText("x", W - 15, py0 + 18);
+
+        // Trục Oy
+        ctx.beginPath(); ctx.moveTo(px0, H); ctx.lineTo(px0, 0); ctx.stroke();
+        drawVectorArrow(ctx, px0, 15, px0, 0, "#334155");
+        ctx.fillText("y", px0 + 15, 15);
+        
+        ctx.textAlign = "right";
+        ctx.textBaseline = "top";
+        ctx.fillText("O", px0 - 5, py0 + 5);
+
+        // Vạch chia đơn vị
+        ctx.font = "12px Arial";
+        for (let x = Math.ceil(xMin); x <= Math.floor(xMax); x += stepGrid) {
+            if (x === 0) continue;
+            let px = toPxX(x);
+            if (px < 22 || px > W - 22) continue;
+            ctx.beginPath(); ctx.moveTo(px, py0 - 3); ctx.lineTo(px, py0 + 3); ctx.stroke();
+            ctx.textAlign = "center";
+            ctx.textBaseline = "top";
+            ctx.fillText(x, px, py0 + 5);
+        }
+        for (let y = Math.ceil(yMin); y <= Math.floor(yMax); y += stepGrid) {
+            if (y === 0) continue;
+            let py = toPxY(y);
+            if (py < 22 || py > H - 22) continue;
+            ctx.beginPath(); ctx.moveTo(px0 - 3, py); ctx.lineTo(px0 + 3, py); ctx.stroke();
+            ctx.textAlign = "right";
+            ctx.textBaseline = "middle";
+            ctx.fillText(y, px0 - 6, py);
+        }
+
+        // Đường tiệm cận
+        ctx.lineWidth = 1.4;
+        ctx.setLineDash([5, 5]);
+        ctx.strokeStyle = "#ef4444";
+
+        if (data.asymptotes.v !== undefined) {
+            let px = toPxX(data.asymptotes.v);
+            ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, H); ctx.stroke();
+        }
+        if (data.asymptotes.h !== undefined) {
+            let py = toPxY(data.asymptotes.h);
+            ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(W, py); ctx.stroke();
+        }
+        if (data.asymptotes.oblique !== undefined) {
+            let { m, n } = data.asymptotes.oblique;
+            ctx.beginPath();
+            ctx.moveTo(toPxX(xMin), toPxY(m*xMin + n));
+            ctx.lineTo(toPxX(xMax), toPxY(m*xMax + n));
+            ctx.stroke();
+        }
+        ctx.setLineDash([]);
+
+        // VẼ ĐƯỜNG CONG ĐỒ THỊ
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(0, 0, W, H);
+        ctx.clip();
+
+        ctx.strokeStyle = "#d97706";
+        ctx.lineWidth = 2.4;
+
+        let segments = [];
+        if (data.discontinuity !== undefined && data.discontinuity > xMin && data.discontinuity < xMax) {
+            let eps = 1e-4;
+            segments.push([xMin, data.discontinuity - eps]);
+            segments.push([data.discontinuity + eps, xMax]);
+        } else {
+            segments.push([xMin, xMax]);
+        }
+
+        segments.forEach(([aSeg, bSeg]) => {
+            ctx.beginPath();
+            let isDrawing = false;
+            let nSteps = 1000;
+            let step = (bSeg - aSeg) / nSteps;
+
+            for (let i = 0; i <= nSteps; i++) {
+                let x = aSeg + i * step;
+                let y = data.yFn(x);
+
+                if (isNaN(y) || !isFinite(y)) {
+                    isDrawing = false;
+                    continue;
+                }
+
+                if (y > yMax + 20 || y < yMin - 20) {
+                    if (isDrawing) {
+                        let clampedY = Math.max(yMin - 20, Math.min(yMax + 20, y));
+                        ctx.lineTo(toPxX(x), toPxY(clampedY));
+                    }
+                    isDrawing = false;
+                    continue;
+                }
+
+                if (!isDrawing) {
+                    ctx.moveTo(toPxX(x), toPxY(y));
+                    isDrawing = true;
+                } else {
+                    ctx.lineTo(toPxX(x), toPxY(y));
+                }
+            }
+            ctx.stroke();
+        });
+
+        ctx.restore();
+
+        // Chấm điểm cực trị
+        if (data.graphExtrema) {
+            data.graphExtrema.forEach(pt => {
+                ctx.strokeStyle = "#94a3b8";
+                ctx.lineWidth = 1;
+                ctx.setLineDash([3, 3]);
+                ctx.beginPath();
+                ctx.moveTo(toPxX(pt.x), py0);
+                ctx.lineTo(toPxX(pt.x), toPxY(pt.y));
+                ctx.lineTo(px0, toPxY(pt.y));
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                ctx.fillStyle = "#dc2626";
+                ctx.beginPath();
+                ctx.arc(toPxX(pt.x), toPxY(pt.y), 4.5, 0, 2*Math.PI);
+                ctx.fill();
+            });
+        }
+
+        // Chấm điểm uốn (Hàm bậc 3)
+        if (data.inflectionPoint) {
+            let pt = data.inflectionPoint;
+            ctx.fillStyle = "#2563eb";
+            ctx.beginPath();
+            ctx.arc(toPxX(pt.x), toPxY(pt.y), 4.5, 0, 2*Math.PI);
+            ctx.fill();
+
+            ctx.font = "italic bold 13px 'Times New Roman', serif";
+            ctx.fillStyle = "#1e3a8a";
+            ctx.textAlign = "left";
+            ctx.textBaseline = "bottom";
+            ctx.fillText(pt.label, toPxX(pt.x) + 6, toPxY(pt.y) - 6);
+        }
+
+        // CHẤM TÂM ĐỐI XỨNG I (HÀM PHÂN THỨC BẬC 1/1 VÀ BẬC 2/1)
+        if (data.symmetryCenter) {
+            let pt = data.symmetryCenter;
+            ctx.fillStyle = "#7c3aed"; // Chấm tròn tím sang trọng
+            ctx.beginPath();
+            ctx.arc(toPxX(pt.x), toPxY(pt.y), 5, 0, 2*Math.PI);
+            ctx.fill();
+
+            ctx.font = "italic bold 13px 'Times New Roman', serif";
+            ctx.fillStyle = "#6d28d9";
+            ctx.textAlign = "left";
+            ctx.textBaseline = "bottom";
+            ctx.fillText(pt.label, toPxX(pt.x) + 7, toPxY(pt.y) - 6);
+        }
+
+        // Nhãn tiệm cận đứng
+        if (data.asymptotes.v !== undefined && data.asymptotes.vPlain) {
+            let px = toPxX(data.asymptotes.v);
+            let badgeX = px > W - 80 ? px - 8 : px + 8;
+            let align = px > W - 80 ? 'right' : 'left';
+            drawCanvasBadge(ctx, data.asymptotes.vPlain, badgeX, 22, W, H, { align, baseline: 'top' });
+        }
+        // Nhãn tiệm cận ngang
+        if (data.asymptotes.h !== undefined && data.asymptotes.hPlain) {
+            let py = toPxY(data.asymptotes.h);
+            let badgeY = py < 35 ? py + 8 : py - 8;
+            let baseline = py < 35 ? 'top' : 'bottom';
+            drawCanvasBadge(ctx, data.asymptotes.hPlain, W - 20, badgeY, W, H, { align: 'right', baseline });
+        }
+        // Nhãn tiệm cận xiên
+        if (data.asymptotes.oblique !== undefined && data.asymptotes.obliquePlain) {
+            let { m, n } = data.asymptotes.oblique;
+            let bxMin = xMin + 1.2, bxMax = xMax - 1.2;
+            let byMin = yMin + 1.2, byMax = yMax - 1.2;
+            let pts = [];
+            let y1 = m * bxMin + n; if (byMin <= y1 && y1 <= byMax) pts.push([bxMin, y1]);
+            let y2 = m * bxMax + n; if (byMin <= y2 && y2 <= byMax) pts.push([bxMax, y2]);
+            if (m !== 0) {
+                let x3 = (byMin - n) / m; if (bxMin <= x3 && x3 <= bxMax) pts.push([x3, byMin]);
+                let x4 = (byMax - n) / m; if (bxMin <= x4 && x4 <= bxMax) pts.push([x4, byMax]);
+            }
+            let unique = [];
+            pts.forEach(p => {
+                if (!unique.some(u => Math.abs(u[0] - p[0]) < 1e-4 && Math.abs(u[1] - p[1]) < 1e-4)) unique.push(p);
+            });
+            if (unique.length >= 2) {
+                unique.sort((u, v) => u[0] - v[0]);
+                let pBadge = [unique[0][0]*0.35 + unique[unique.length-1][0]*0.65, unique[0][1]*0.35 + unique[unique.length-1][1]*0.65];
+                drawCanvasBadge(ctx, data.asymptotes.obliquePlain, toPxX(pBadge[0]), toPxY(pBadge[1]) - 10, W, H, { align: 'center', baseline: 'bottom' });
+            }
+        }
+    }
+
+    // =========================================================================
+    // 7. CÔNG CỤ XUẤT ẢNH & SAO CHÉP
+    // =========================================================================
+    function toggleMarkdownView() {
+        const renderView = document.getElementById('mdRenderedView');
+        const rawView = document.getElementById('mdRawView');
+        const btn = document.getElementById('btnToggleMode');
+
+        if (rawView.classList.contains('d-none')) {
+            rawView.classList.remove('d-none');
+            renderView.classList.add('d-none');
+            btn.innerHTML = '<i class="fa-solid fa-eye me-1"></i>Xem hiển thị';
+        } else {
+            rawView.classList.add('d-none');
+            renderView.classList.remove('d-none');
+            btn.innerHTML = '<i class="fa-solid fa-code me-1"></i>Xem mã MD';
+            renderMarkdownWithKaTeX(currentRawMarkdown, renderView);
+        }
+    }
+
+    function copyMarkdownText() {
+        if (!navigator.clipboard) {
+            const textArea = document.getElementById('mdRawView');
+            textArea.select();
+            document.execCommand('copy');
+        } else {
+            navigator.clipboard.writeText(currentRawMarkdown);
+        }
+        const toastEl = document.getElementById('copyToast');
+        const toast = new bootstrap.Toast(toastEl, { delay: 2500 });
+        toast.show();
+    }
+
+    function downloadCanvas(canvasId, fileName) {
+        const canvas = document.getElementById(canvasId);
+        const link = document.createElement('a');
+        link.download = fileName;
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        setupTabs();
+        renderInputs();
+    });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
