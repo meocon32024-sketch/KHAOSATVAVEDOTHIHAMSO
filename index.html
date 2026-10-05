@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Khảo Sát & Vẽ Đồ Thị Hàm Số mônToán THPT</title>
+    <title>Khảo Sát & Vẽ Đồ Thị Hàm Số - Toán 12 KNTT</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome Icons -->
@@ -104,7 +104,7 @@
 <header class="app-header text-center">
     <div class="container">
         <h2 class="fw-bold mb-1"><i class="fa-solid fa-square-root-variable me-2"></i>ỨNG DỤNG KHẢO SÁT & VẼ ĐỒ THỊ HÀM SỐ</h2>
-        <p class="mb-0 text-light opacity-75">Chuẩn hóa hình học & giải tích GDPT 2018/ GV MAI ĐỨC THẮNG - THPT NTB</p>
+        <p class="mb-0 text-light opacity-75">Chuẩn hóa hình học & giải tích GDPT 2018 — SGK Toán 12 Kết nối tri thức với cuộc sống</p>
     </div>
 </header>
 
@@ -463,7 +463,7 @@
             preview: '$$y = ax^4 + bx^2 + c \\quad (a \\neq 0)$$',
             fields: [
                 { id: 'a', label: 'a', def: '1' },
-                { id: 'b', label: 'b', def: '-2' },
+                { id: 'b', label: 'b', def: '0' },
                 { id: 'c', label: 'c', def: '-1' }
             ]
         },
@@ -477,7 +477,7 @@
         }
     };
 
-    let currentType = 'bac1_1';
+    let currentType = 'trungphuong';
     let currentRawMarkdown = '';
 
     function setupTabs() {
@@ -914,9 +914,10 @@
                 md += `- Cho $y' = 0 \\Leftrightarrow x = 0$.\n\n`;
                 md += `- **Cực trị:** Hàm số đạt ${isApos ? 'cực tiểu' : 'cực đại'} tại $x = 0$, giá trị cực trị là $y = ${y0Frac.toLatex()}$.\n\n`;
 
+                // ĐÃ SỬA CHỮA: yLevel tại x = 0 là 'bot' khi a > 0 (cực tiểu ở đáy), 'top' khi a < 0 (cực đại ở đỉnh)
                 res.bbtColumns = [
                     { type: 'inf', xVal: -Infinity, xExact: { isFrac: false, text: "-∞" }, yLevel: isApos ? 'top' : 'bot', yExact: { text: isApos ? '+∞' : '-∞', isFrac: false } },
-                    { type: 'extremum', xVal: 0, xExact: { isFrac: false, text: "0" }, extremumType: isApos ? 'min' : 'max', yLevel: isApos ? 'top' : 'bot', yExact: y0Frac.toExactObj() },
+                    { type: 'extremum', xVal: 0, xExact: { isFrac: false, text: "0" }, extremumType: isApos ? 'min' : 'max', yLevel: isApos ? 'bot' : 'top', yExact: y0Frac.toExactObj() },
                     { type: 'inf', xVal: Infinity, xExact: { isFrac: false, text: "+∞" }, yLevel: isApos ? 'top' : 'bot', yExact: { text: isApos ? '+∞' : '-∞', isFrac: false } }
                 ];
                 res.signs = isApos ? ['-', '+'] : ['+', '-'];
@@ -1195,14 +1196,12 @@
         let x_min, x_max, y_min, y_max;
 
         if (disc !== undefined) {
-            // HÀM PHÂN THỨC: CĂN GIỮA ĐỐI XỨNG QUANH TIỆM CẬN ĐỨNG ĐỂ THẤY ĐỦ 2 NHÁNH HYPEBOL
             let x0 = disc;
             let rx = Math.max(5.5, Math.abs(x0) + 2.5);
             xs.forEach(x => { rx = Math.max(rx, Math.abs(x - x0) + 2.5); });
             x_min = Math.min(x0 - rx, -4.0);
             x_max = Math.max(x0 + rx, 4.0);
         } else {
-            // ĐA THỨC BẬC 2, 3, TRÙNG PHƯƠNG
             let min_x = Math.min(...xs), max_x = Math.max(...xs);
             let span_x = Math.max(max_x - min_x, 4.0);
             let cx = (min_x + max_x) / 2.0;
@@ -1212,13 +1211,11 @@
         }
 
         if (asym.h !== undefined) {
-            // HÀM BẬC 1/1 CÓ TIỆM CẬN NGANG
             let y0 = asym.h;
             let ry = Math.max(5.0, Math.abs(y0) + 2.5);
             y_min = Math.min(y0 - ry, -4.0);
             y_max = Math.max(y0 + ry, 4.0);
         } else if (asym.oblique !== undefined && disc !== undefined) {
-            // HÀM BẬC 2/1 CÓ TIỆM CẬN XIÊN
             let m = asym.oblique.m, n = asym.oblique.n;
             let y_I = m * disc + n;
             let min_y = Math.min(...ys), max_y = Math.max(...ys);
@@ -1226,7 +1223,6 @@
             y_min = Math.min(y_I - ry, -4.0);
             y_max = Math.max(y_I + ry, 4.0);
         } else {
-            // ĐA THỨC
             let min_y = Math.min(...ys), max_y = Math.max(...ys);
             let span_y = Math.max(max_y - min_y, 4.0);
             let cy = (min_y + max_y) / 2.0;
@@ -1244,7 +1240,7 @@
     }
 
     // =========================================================================
-    // 6. VẼ ĐỒ THỊ HÀM SỐ TRÊN HỆ TRỤC OXY (TRỌN VẸN 2 NHÁNH HYPEBOL)
+    // 6. VẼ ĐỒ THỊ HÀM SỐ TRÊN HỆ TRỤC OXY
     // =========================================================================
     function drawCanvasBadge(ctx, text, x, y, W, H, options = {}) {
         ctx.save();
@@ -1299,14 +1295,12 @@
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, W, H);
 
-        // TÍNH BÁN KÍNH KHUNG NHÌN ĐỘNG THÔNG MINH
         const bounds = computeGraphBounds(data);
         const { xMin, xMax, yMin, yMax } = bounds;
 
         const toPxX = (x) => ((x - xMin) / (xMax - xMin)) * W;
         const toPxY = (y) => H - ((y - yMin) / (yMax - yMin)) * H;
 
-        // Lưới tọa độ
         let stepGrid = (xMax - xMin > 18 || yMax - yMin > 18) ? 2 : 1;
         ctx.strokeStyle = "#f1f5f9";
         ctx.lineWidth = 1;
@@ -1317,7 +1311,6 @@
             ctx.beginPath(); ctx.moveTo(0, toPxY(y)); ctx.lineTo(W, toPxY(y)); ctx.stroke();
         }
 
-        // Trục tọa độ Oxy
         ctx.strokeStyle = "#334155";
         ctx.fillStyle = "#334155";
         ctx.lineWidth = 1.6;
@@ -1325,13 +1318,11 @@
         const py0 = toPxY(0);
         const px0 = toPxX(0);
 
-        // Trục Ox
         ctx.beginPath(); ctx.moveTo(0, py0); ctx.lineTo(W, py0); ctx.stroke();
         drawVectorArrow(ctx, W - 15, py0, W, py0, "#334155");
         ctx.font = "italic 16px 'Times New Roman', serif";
         ctx.fillText("x", W - 15, py0 + 18);
 
-        // Trục Oy
         ctx.beginPath(); ctx.moveTo(px0, H); ctx.lineTo(px0, 0); ctx.stroke();
         drawVectorArrow(ctx, px0, 15, px0, 0, "#334155");
         ctx.fillText("y", px0 + 15, 15);
@@ -1340,7 +1331,6 @@
         ctx.textBaseline = "top";
         ctx.fillText("O", px0 - 5, py0 + 5);
 
-        // Vạch chia đơn vị
         ctx.font = "12px Arial";
         for (let x = Math.ceil(xMin); x <= Math.floor(xMax); x += stepGrid) {
             if (x === 0) continue;
@@ -1361,7 +1351,6 @@
             ctx.fillText(y, px0 - 6, py);
         }
 
-        // Đường tiệm cận
         ctx.lineWidth = 1.4;
         ctx.setLineDash([5, 5]);
         ctx.strokeStyle = "#ef4444";
@@ -1383,7 +1372,6 @@
         }
         ctx.setLineDash([]);
 
-        // VẼ ĐƯỜNG CONG ĐỒ THỊ
         ctx.save();
         ctx.beginPath();
         ctx.rect(0, 0, W, H);
@@ -1437,7 +1425,6 @@
 
         ctx.restore();
 
-        // Chấm điểm cực trị
         if (data.graphExtrema) {
             data.graphExtrema.forEach(pt => {
                 ctx.strokeStyle = "#94a3b8";
@@ -1457,7 +1444,6 @@
             });
         }
 
-        // Chấm điểm uốn (Hàm bậc 3)
         if (data.inflectionPoint) {
             let pt = data.inflectionPoint;
             ctx.fillStyle = "#2563eb";
@@ -1472,10 +1458,9 @@
             ctx.fillText(pt.label, toPxX(pt.x) + 6, toPxY(pt.y) - 6);
         }
 
-        // CHẤM TÂM ĐỐI XỨNG I (HÀM PHÂN THỨC BẬC 1/1 VÀ BẬC 2/1)
         if (data.symmetryCenter) {
             let pt = data.symmetryCenter;
-            ctx.fillStyle = "#7c3aed"; // Chấm tròn tím sang trọng
+            ctx.fillStyle = "#7c3aed";
             ctx.beginPath();
             ctx.arc(toPxX(pt.x), toPxY(pt.y), 5, 0, 2*Math.PI);
             ctx.fill();
@@ -1487,21 +1472,18 @@
             ctx.fillText(pt.label, toPxX(pt.x) + 7, toPxY(pt.y) - 6);
         }
 
-        // Nhãn tiệm cận đứng
         if (data.asymptotes.v !== undefined && data.asymptotes.vPlain) {
             let px = toPxX(data.asymptotes.v);
             let badgeX = px > W - 80 ? px - 8 : px + 8;
             let align = px > W - 80 ? 'right' : 'left';
             drawCanvasBadge(ctx, data.asymptotes.vPlain, badgeX, 22, W, H, { align, baseline: 'top' });
         }
-        // Nhãn tiệm cận ngang
         if (data.asymptotes.h !== undefined && data.asymptotes.hPlain) {
             let py = toPxY(data.asymptotes.h);
             let badgeY = py < 35 ? py + 8 : py - 8;
             let baseline = py < 35 ? 'top' : 'bottom';
             drawCanvasBadge(ctx, data.asymptotes.hPlain, W - 20, badgeY, W, H, { align: 'right', baseline });
         }
-        // Nhãn tiệm cận xiên
         if (data.asymptotes.oblique !== undefined && data.asymptotes.obliquePlain) {
             let { m, n } = data.asymptotes.oblique;
             let bxMin = xMin + 1.2, bxMax = xMax - 1.2;
