@@ -104,7 +104,7 @@
 <header class="app-header text-center">
     <div class="container">
         <h2 class="fw-bold mb-1"><i class="fa-solid fa-square-root-variable me-2"></i>ỨNG DỤNG KHẢO SÁT & VẼ ĐỒ THỊ HÀM SỐ</h2>
-        <p class="mb-0 text-light opacity-75">Chuẩn hóa hình học & giải tích GDPT 2018 — SGK Toán 12 Kết nối tri thức với cuộc sống</p>
+        <p class="mb-0 text-light opacity-75">Chuẩn hóa hình học & giải tích GDPT 2018 — môn Toán THPT/ gv MAI ĐỨC THẮNG - trường THPT NTB</p>
     </div>
 </header>
 
@@ -477,7 +477,7 @@
         }
     };
 
-    let currentType = 'trungphuong';
+    let currentType = 'bac1_1';
     let currentRawMarkdown = '';
 
     function setupTabs() {
@@ -914,7 +914,6 @@
                 md += `- Cho $y' = 0 \\Leftrightarrow x = 0$.\n\n`;
                 md += `- **Cực trị:** Hàm số đạt ${isApos ? 'cực tiểu' : 'cực đại'} tại $x = 0$, giá trị cực trị là $y = ${y0Frac.toLatex()}$.\n\n`;
 
-                // ĐÃ SỬA CHỮA: yLevel tại x = 0 là 'bot' khi a > 0 (cực tiểu ở đáy), 'top' khi a < 0 (cực đại ở đỉnh)
                 res.bbtColumns = [
                     { type: 'inf', xVal: -Infinity, xExact: { isFrac: false, text: "-∞" }, yLevel: isApos ? 'top' : 'bot', yExact: { text: isApos ? '+∞' : '-∞', isFrac: false } },
                     { type: 'extremum', xVal: 0, xExact: { isFrac: false, text: "0" }, extremumType: isApos ? 'min' : 'max', yLevel: isApos ? 'bot' : 'top', yExact: y0Frac.toExactObj() },
